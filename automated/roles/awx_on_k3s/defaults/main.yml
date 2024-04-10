@@ -13,4 +13,8 @@ awx_on_k3s_awx_dirs:
   - path: /data/projects
     owner: "1000:0"
     mode: "0755"
+awx_on_k3s_hosts_lines:
+  - "{{ ansible_facts['ansible_default_ipv4']['address'] }} {{ awx_on_k3s_awx_host }}"
+  - "{{ ansible_facts['ansible_default_ipv4']['address'] }} {{ awx_on_k3s_galaxy_host }}"
+  - "{{ ansible_facts['ansible_default_ipv4']['address'] }} {{ awx_on_k3s_eda_host }}"
 ...

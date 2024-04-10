@@ -4,6 +4,11 @@
   ansible.builtin.import_tasks:
     file: pre_k3s.yml
 
+- name: Import local_hosts.yml
+  ansible.builtin.import_tasks:
+    file: local_hosts.yml
+  when: awx_on_k3s_local_hosts is defined
+
 - name: Import deploy_k3s.yml
   ansible.builtin.import_tasks:
     file: deploy_k3s.yml
