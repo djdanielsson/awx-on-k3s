@@ -10,10 +10,10 @@ awx_on_k3s_deployment_dir: /tmp/awx_on_k3s
 awx_on_k3s_deploy_k3s: true
 awx_on_k3s_awx_dirs:
   - path: /data/postgres-15/data
-    owner: "26:0"
+    owner: 26:0
     mode: "0700"
   - path: /data/projects
-    owner: "1000:0"
+    owner: 1000:0
     mode: "0755"
 awx_on_k3s_disable_services:
   - firewalld
