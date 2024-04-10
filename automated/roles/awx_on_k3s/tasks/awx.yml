@@ -27,7 +27,7 @@
   register: r_awx_tls_key
 
 - name: Generate tls when they do not exist
-  when: not r_awx_tls_key['stat']['exist']
+  when: not r_awx_tls_key['stat']['exists']
   block:
     - name: Create private key (RSA, 4096 bits)
       community.crypto.openssl_privatekey:
