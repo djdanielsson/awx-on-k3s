@@ -22,11 +22,11 @@
   ansible.builtin.import_tasks:
     file: awx.yml
 
-# - name: Import galaxy_ng.yml
-#   ansible.builtin.import_tasks:
-#     file: galaxy_ng.yml
+- name: Import galaxy_ng.yml
+  ansible.builtin.import_tasks:
+    file: galaxy_ng.yml
 
-# - name: Import eda.yml
-#   ansible.builtin.import_tasks:
-#     file: eda.yml
+- name: Import eda.yml
+  ansible.builtin.import_tasks:
+    file: eda.yml
 ...
