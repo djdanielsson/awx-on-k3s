@@ -1,0 +1,21 @@
+---
+- name: Disable services
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: stopped
+    enabled: false
+  loop:
+    - firewalld
+    - nm-cloud-setup.service
+    - nm-cloud-setup.timer
+
+- name: Reboot
+  ansible.builtin.reboot:
+
+- name: Ensure required packages are installed
+  ansible.builtin.package:
+    name:
+      - git
+      - curl
+    state: present
+...

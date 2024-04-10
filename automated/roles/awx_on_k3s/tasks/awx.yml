@@ -1,0 +1,43 @@
+---
+- name: Deploy AWX Operator
+  kubernetes.core.k8s:
+    state: present
+    src: ./operator
+
+- name: Create certificate signing request (CSR) for self-signed certificate
+  community.crypto.openssl_csr_pipe:
+    privatekey_path: ./base/tls.key
+    common_name: "{{ awx_on_k3s_awx_host }}"
+    subject_alt_name:
+      - "DNS:{{ awx_on_k3s_awx_host }}"
+  register: csr
+
+- name: Create self-signed certificate from CSR
+  community.crypto.x509_certificate:
+    path: ./base/tls.crt
+    csr_content: "{{ csr.csr }}"
+    privatekey_path: ./base/tls.key
+    provider: selfsigned
+
+- name: Ensure awx.yaml config is good
+  ansible.builtin.template:
+    src: "{{ item }}.yaml.j2"
+    dest: ./base/{{ item }}.yaml
+    mode: "0644"
+  loop:
+    - awx
+    - awx_kustomization
+
+- name: Ensure directories exist and have correct permissions
+  ansible.builtin.file:
+    path: "{{ item['path'] }}"
+    state: directory
+    owner: "{{ item['owner'] }}"
+    mode: "{{ item['mode'] }}"
+  loop: "{{ awx_on_k3s_awx_dirs }}"
+
+- name: Deploy AWX
+  kubernetes.core.k8s:
+    state: present
+    src: ./base
+...

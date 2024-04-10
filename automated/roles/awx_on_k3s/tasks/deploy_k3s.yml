@@ -1,0 +1,6 @@
+---
+- name: Install k3s
+  ansible.builtin.shell: set -o pipefail && curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v1.28.7+k3s1 sh -s - --write-kubeconfig-mode 644
+  changed_when: true
+
+...

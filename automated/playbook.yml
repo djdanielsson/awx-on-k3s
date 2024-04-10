@@ -1,0 +1,11 @@
+---
+- name: Deploy AWX on k3s
+  hosts: all
+  gather_facts: true
+  become: true
+  tasks:
+    - name: Import awx_on_k3s role
+      ansible.builtin.import_role:
+        name: awx_on_k3s
+
+...

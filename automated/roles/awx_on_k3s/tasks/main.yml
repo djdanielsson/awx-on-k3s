@@ -1,0 +1,22 @@
+---
+# tasks file for awx_on_k3s
+- name: Import pre_k3s.yml
+  ansible.builtin.import_tasks:
+    file: pre_k3s.yml
+
+- name: Import deploy_k3s.yml
+  ansible.builtin.import_tasks:
+    file: deploy_k3s.yml
+
+- name: Import awx.yml
+  ansible.builtin.import_tasks:
+    file: awx.yml
+
+# - name: Import galaxy_ng.yml
+#   ansible.builtin.import_tasks:
+#     file: galaxy_ng.yml
+
+# - name: Import eda.yml
+#   ansible.builtin.import_tasks:
+#     file: eda.yml
+...
