@@ -3,13 +3,13 @@
   ansible.builtin.file:
     path: "{{ awx_on_k3s_deployment_dir }}"
     state: directory
-    mode: "0750"
+    mode: "0755"
 
 - name: Copy base config
   ansible.builtin.copy:
     src: "{{ item }}/"
     dest: "{{ awx_on_k3s_deployment_dir }}/{{ item }}"
-    mode: "0640"
+    mode: "0644"
   loop:
     - operator
     - base
@@ -20,6 +20,10 @@
     definition: "{{ lookup('kubernetes.core.kustomize', dir=operator_dir) }}"
   vars:
     operator_dir: "{{ awx_on_k3s_deployment_dir }}/operator"
+
+- name: Create private key (RSA, 4096 bits)
+  community.crypto.openssl_privatekey:
+    path: "{{ awx_on_k3s_deployment_dir }}/base/tls.key"
 
 - name: Create certificate signing request (CSR) for self-signed certificate
   community.crypto.openssl_csr_pipe:
