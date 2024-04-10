@@ -32,6 +32,7 @@
     - name: Create private key (RSA, 4096 bits)
       community.crypto.openssl_privatekey:
         path: "{{ awx_on_k3s_deployment_dir }}/base/tls.key"
+        mode: "0644"
 
     - name: Create certificate signing request (CSR) for self-signed certificate
       community.crypto.openssl_csr_pipe:
@@ -47,6 +48,7 @@
         csr_content: "{{ csr.csr }}"
         privatekey_path: "{{ awx_on_k3s_deployment_dir }}/base/tls.key"
         provider: selfsigned
+        mode: "0644"
 
 - name: Ensure directories exist and have correct permissions
   ansible.builtin.file:
