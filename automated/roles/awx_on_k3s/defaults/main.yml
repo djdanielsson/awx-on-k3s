@@ -6,6 +6,8 @@ awx_on_k3s_galaxy_host: galaxy.example.com
 awx_on_k3s_galaxy_admin_pass: 'Password1234!'
 awx_on_k3s_eda_host: eda.example.com
 awx_on_k3s_eda_admin_pass: 'Password1234!'
+awx_on_k3s_deployment_dir: /tmp/awx_on_k3s
+awx_on_k3s_deploy_k3s: true
 awx_on_k3s_awx_dirs:
   - path: /data/postgres-15/data
     owner: "26:0"
@@ -13,8 +15,12 @@ awx_on_k3s_awx_dirs:
   - path: /data/projects
     owner: "1000:0"
     mode: "0755"
+awx_on_k3s_disable_services:
+  - firewalld
+  - nm-cloud-setup.service
+  - nm-cloud-setup.timer
 awx_on_k3s_hosts_lines:
-  - "{{ ansible_facts['ansible_default_ipv4']['address'] }} {{ awx_on_k3s_awx_host }}"
-  - "{{ ansible_facts['ansible_default_ipv4']['address'] }} {{ awx_on_k3s_galaxy_host }}"
-  - "{{ ansible_facts['ansible_default_ipv4']['address'] }} {{ awx_on_k3s_eda_host }}"
+  - "{{ ansible_facts['default_ipv4']['address'] }} {{ awx_on_k3s_awx_host }}"
+  - "{{ ansible_facts['default_ipv4']['address'] }} {{ awx_on_k3s_galaxy_host }}"
+  - "{{ ansible_facts['default_ipv4']['address'] }} {{ awx_on_k3s_eda_host }}"
 ...

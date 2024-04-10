@@ -4,18 +4,25 @@
     name: "{{ item }}"
     state: stopped
     enabled: false
-  loop:
-    - firewalld
-    - nm-cloud-setup.service
-    - nm-cloud-setup.timer
+  failed_when: false
+  notify:
+    - Reboot
+  loop: "{{ awx_on_k3s_disable_services }}"
 
-- name: Reboot
-  ansible.builtin.reboot:
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
 
 - name: Ensure required packages are installed
   ansible.builtin.package:
     name:
       - git
       - curl
+    state: present
+
+- name: Ensure python packages are installed
+  ansible.builtin.pip:
+    name:
+      - cryptography
+      - kubernetes
     state: present
 ...

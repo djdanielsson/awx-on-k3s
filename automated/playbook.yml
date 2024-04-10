@@ -3,6 +3,11 @@
   hosts: all
   gather_facts: true
   become: true
+  vars:
+    awx_on_k3s_local_hosts: true
+    awx_on_k3s_deploy_k3s: false
+  environment:
+    K8S_AUTH_KUBECONFIG: /etc/rancher/k3s/k3s.yaml
   tasks:
     - name: Import awx_on_k3s role
       ansible.builtin.import_role:

@@ -1,12 +1,29 @@
 ---
+- name: Create required directories
+  ansible.builtin.file:
+    path: "{{ awx_on_k3s_deployment_dir }}"
+    state: directory
+    mode: "0750"
+
+- name: Copy base config
+  ansible.builtin.copy:
+    src: "{{ item }}/"
+    dest: "{{ awx_on_k3s_deployment_dir }}/{{ item }}"
+    mode: "0640"
+  loop:
+    - operator
+    - base
+
 - name: Deploy AWX Operator
   kubernetes.core.k8s:
     state: present
-    src: ./operator
+    definition: "{{ lookup('kubernetes.core.kustomize', dir=operator_dir) }}"
+  vars:
+    operator_dir: "{{ awx_on_k3s_deployment_dir }}/operator"
 
 - name: Create certificate signing request (CSR) for self-signed certificate
   community.crypto.openssl_csr_pipe:
-    privatekey_path: ./base/tls.key
+    privatekey_path: "{{ awx_on_k3s_deployment_dir }}/base/tls.key"
     common_name: "{{ awx_on_k3s_awx_host }}"
     subject_alt_name:
       - "DNS:{{ awx_on_k3s_awx_host }}"
@@ -14,19 +31,19 @@
 
 - name: Create self-signed certificate from CSR
   community.crypto.x509_certificate:
-    path: ./base/tls.crt
+    path: "{{ awx_on_k3s_deployment_dir }}/base/tls.crt"
     csr_content: "{{ csr.csr }}"
-    privatekey_path: ./base/tls.key
+    privatekey_path: "{{ awx_on_k3s_deployment_dir }}/base/tls.key"
     provider: selfsigned
 
 - name: Ensure awx.yaml config is good
   ansible.builtin.template:
-    src: "{{ item }}.yaml.j2"
-    dest: ./base/{{ item }}.yaml
+    src: "awx/{{ item }}.yaml.j2"
+    dest: "{{ awx_on_k3s_deployment_dir }}/base/{{ item }}.yaml"
     mode: "0644"
   loop:
     - awx
-    - awx_kustomization
+    - kustomization
 
 - name: Ensure directories exist and have correct permissions
   ansible.builtin.file:
@@ -39,5 +56,8 @@
 - name: Deploy AWX
   kubernetes.core.k8s:
     state: present
-    src: ./base
+    definition: "{{ lookup('kubernetes.core.kustomize', dir=base_dir) }}"
+  vars:
+    base_dir: "{{ awx_on_k3s_deployment_dir }}/base/"
+
 ...
