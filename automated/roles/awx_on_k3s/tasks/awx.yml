@@ -1,29 +1,26 @@
 ---
-- name: Create required directories
+- name: Create config directory
   ansible.builtin.file:
     path: "{{ awx_on_k3s_deployment_dir }}"
     state: directory
     mode: "0755"
 
-- name: Copy base config
+- name: Copy awx config
   ansible.builtin.copy:
-    src: "{{ item }}/"
-    dest: "{{ awx_on_k3s_deployment_dir }}/{{ item }}"
+    src: "awx/"
+    dest: "{{ awx_on_k3s_deployment_dir }}/awx"
     mode: "0644"
-  loop:
-    - operator
-    - base
 
 - name: Deploy AWX Operator
   kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('kubernetes.core.kustomize', dir=operator_dir) }}"
   vars:
-    operator_dir: "{{ awx_on_k3s_deployment_dir }}/operator"
+    operator_dir: "{{ awx_on_k3s_deployment_dir }}/awx/operator"
 
 - name: Check if tls keys already exist
   ansible.builtin.stat:
-    path: "{{ awx_on_k3s_deployment_dir }}/base/tls.key"
+    path: "{{ awx_on_k3s_deployment_dir }}/awx/server/tls.key"
   register: r_awx_tls_key
 
 - name: Generate tls when they do not exist
@@ -31,12 +28,12 @@
   block:
     - name: Create private key (RSA, 4096 bits)
       community.crypto.openssl_privatekey:
-        path: "{{ awx_on_k3s_deployment_dir }}/base/tls.key"
+        path: "{{ awx_on_k3s_deployment_dir }}/awx/server/tls.key"
         mode: "0644"
 
     - name: Create certificate signing request (CSR) for self-signed certificate
       community.crypto.openssl_csr_pipe:
-        privatekey_path: "{{ awx_on_k3s_deployment_dir }}/base/tls.key"
+        privatekey_path: "{{ awx_on_k3s_deployment_dir }}/awx/server/tls.key"
         common_name: "{{ awx_on_k3s_awx_host }}"
         subject_alt_name:
           - "DNS:{{ awx_on_k3s_awx_host }}"
@@ -44,9 +41,9 @@
 
     - name: Create self-signed certificate from CSR
       community.crypto.x509_certificate:
-        path: "{{ awx_on_k3s_deployment_dir }}/base/tls.crt"
+        path: "{{ awx_on_k3s_deployment_dir }}/awx/server/tls.crt"
         csr_content: "{{ csr.csr }}"
-        privatekey_path: "{{ awx_on_k3s_deployment_dir }}/base/tls.key"
+        privatekey_path: "{{ awx_on_k3s_deployment_dir }}/awx/server/tls.key"
         provider: selfsigned
         mode: "0644"
 
@@ -61,7 +58,7 @@
 - name: Ensure awx.yaml config is good
   ansible.builtin.template:
     src: "awx/{{ item }}.yaml.j2"
-    dest: "{{ awx_on_k3s_deployment_dir }}/base/{{ item }}.yaml"
+    dest: "{{ awx_on_k3s_deployment_dir }}/awx/server/{{ item }}.yaml"
     mode: "0644"
   loop:
     - awx
@@ -72,6 +69,6 @@
     state: present
     definition: "{{ lookup('kubernetes.core.kustomize', dir=base_dir) }}"
   vars:
-    base_dir: "{{ awx_on_k3s_deployment_dir }}/base/"
+    base_dir: "{{ awx_on_k3s_deployment_dir }}/awx/server/"
 
 ...

@@ -4,6 +4,9 @@
     path: /etc/hosts
     line: "{{ item }}"
   loop: "{{ awx_on_k3s_hosts_lines }}"
+  notify:
+    - Daemon-reload
+    - Restart dnsmasq
 
 - name: Install dnsmasq
   ansible.builtin.package:
@@ -15,6 +18,8 @@
     name: dnsmasq
     state: started
     enabled: true
+  notify:
+    - Daemon-reload
 
 - name: Ensure directory paths exist
   ansible.builtin.file:
@@ -27,9 +32,10 @@
     dest: /etc/rancher/k3s/resolv.conf
     content: "nameserver {{ ansible_facts['default_ipv4']['address'] }}"
     mode: "0644"
+  notify:
+    - Daemon-reload
 
-- name: Do daemon-reload
-  ansible.builtin.systemd_service:
-    daemon_reload: true
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
 
 ...

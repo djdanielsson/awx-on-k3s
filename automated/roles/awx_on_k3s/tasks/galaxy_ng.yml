@@ -1,11 +1,11 @@
 ---
-- name: Copy base config
+- name: Copy galaxy_ng config
   ansible.builtin.copy:
     src: "galaxy_ng/"
     dest: "{{ awx_on_k3s_deployment_dir }}/galaxy_ng"
     mode: "0644"
 
-- name: Deploy galaxy Operator
+- name: Deploy galaxy_ng Operator
   kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('kubernetes.core.kustomize', dir=operator_dir) }}"
@@ -17,7 +17,7 @@
 
 - name: Check if tls keys already exist
   ansible.builtin.stat:
-    path: "{{ awx_on_k3s_deployment_dir }}/galaxy_ng/galaxy/tls.key"
+    path: "{{ awx_on_k3s_deployment_dir }}/galaxy_ng/server/tls.key"
   register: r_awx_tls_key
 
 - name: Generate tls when they do not exist
@@ -25,12 +25,12 @@
   block:
     - name: Create private key (RSA, 4096 bits)
       community.crypto.openssl_privatekey:
-        path: "{{ awx_on_k3s_deployment_dir }}/galaxy_ng/galaxy/tls.key"
+        path: "{{ awx_on_k3s_deployment_dir }}/galaxy_ng/server/tls.key"
         mode: "0644"
 
     - name: Create certificate signing request (CSR) for self-signed certificate
       community.crypto.openssl_csr_pipe:
-        privatekey_path: "{{ awx_on_k3s_deployment_dir }}/galaxy_ng/galaxy/tls.key"
+        privatekey_path: "{{ awx_on_k3s_deployment_dir }}/galaxy_ng/server/tls.key"
         common_name: "{{ awx_on_k3s_awx_host }}"
         subject_alt_name:
           - "DNS:{{ awx_on_k3s_awx_host }}"
@@ -38,9 +38,9 @@
 
     - name: Create self-signed certificate from CSR
       community.crypto.x509_certificate:
-        path: "{{ awx_on_k3s_deployment_dir }}/galaxy_ng/galaxy/tls.crt"
+        path: "{{ awx_on_k3s_deployment_dir }}/galaxy_ng/server/tls.crt"
         csr_content: "{{ csr.csr }}"
-        privatekey_path: "{{ awx_on_k3s_deployment_dir }}/galaxy_ng/galaxy/tls.key"
+        privatekey_path: "{{ awx_on_k3s_deployment_dir }}/galaxy_ng/server/tls.key"
         provider: selfsigned
         mode: "0644"
 
@@ -55,17 +55,17 @@
 - name: Ensure galaxy.yaml config is good
   ansible.builtin.template:
     src: "galaxy_ng/{{ item }}.yaml.j2"
-    dest: "{{ awx_on_k3s_deployment_dir }}/galaxy_ng/galaxy/{{ item }}.yaml"
+    dest: "{{ awx_on_k3s_deployment_dir }}/galaxy_ng/server/{{ item }}.yaml"
     mode: "0644"
   loop:
     - galaxy
     - kustomization
 
-- name: Deploy galaxy
+- name: Deploy galaxy_ng
   kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('kubernetes.core.kustomize', dir=base_dir) }}"
   vars:
-    base_dir: "{{ awx_on_k3s_deployment_dir }}/galaxy_ng/galaxy/"
+    base_dir: "{{ awx_on_k3s_deployment_dir }}/galaxy_ng/server/"
 
 ...

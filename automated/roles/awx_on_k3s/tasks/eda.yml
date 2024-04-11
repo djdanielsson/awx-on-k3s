@@ -1,5 +1,5 @@
 ---
-- name: Copy base config
+- name: Copy eda config
   ansible.builtin.copy:
     src: "eda/"
     dest: "{{ awx_on_k3s_deployment_dir }}/eda"
