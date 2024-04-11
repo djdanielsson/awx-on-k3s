@@ -1,38 +1,73 @@
 Role Name
 =========
 
-A brief description of the role goes here.
+A role to deploy AWX, Galaxy_NG, and EDA on k3s. Based on https://github.com/kurokobo/awx-on-k3s/
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+Python modules:
+```console
+cryptography
+kubernetes
+kubernetes-validate
+```
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+|Variable Name|Default Value|Required|Type|Description|
+|:---:|:---:|:---:|:---:|:---:|
+|`awx_on_k3s_awx_host`|awx.example.com|true|str||
+|`awx_on_k3s_awx_admin_pass`|'Password1234!'|true|str||
+|`awx_on_k3s_galaxy_host`|galaxy.example.com|true|str||
+|`awx_on_k3s_galaxy_admin_pass`|'Password1234!'|true|str||
+|`awx_on_k3s_eda_host`|eda.example.com|true|str||
+|`awx_on_k3s_eda_admin_pass`|'Password1234!'|true|str||
+|`awx_on_k3s_deployment_dir`|/awx_on_k3s|true|str||
+|`awx_on_k3s_deploy_k3s`|true|true|bool||
+|`awx_on_k3s_disable_services`|[firewalld, nm-cloud-setup.service, nm-cloud-setup.timer]|true|list||
+|`awx_on_k3s_hosts_lines`|false|(see defaults/main.yml)|list||
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+```yaml
+---
+collections:
+  - name: kubernetes.core
+  - name: community.crypto
+...
+```
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+```yaml
+---
+- name: Deploy AWX on k3s
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  become: true
+  vars:
+    awx_on_k3s_local_hosts: true
+  environment:
+    K8S_AUTH_KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+  tasks:
+    - name: Import awx_on_k3s role
+      ansible.builtin.import_role:
+        name: awx_on_k3s
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+...
+```
 
 License
 -------
 
-BSD
+MIT
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+David Danielsson @djdanielsson
