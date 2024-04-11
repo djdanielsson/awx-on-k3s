@@ -6,7 +6,7 @@ awx_on_k3s_galaxy_host: galaxy.example.com
 awx_on_k3s_galaxy_admin_pass: 'Password1234!'
 awx_on_k3s_eda_host: eda.example.com
 awx_on_k3s_eda_admin_pass: 'Password1234!'
-awx_on_k3s_deployment_dir: awx_on_k3s
+awx_on_k3s_deployment_dir: /awx_on_k3s
 awx_on_k3s_deploy_k3s: true
 awx_on_k3s_awx_dirs:
   - path: /data/postgres-15/data

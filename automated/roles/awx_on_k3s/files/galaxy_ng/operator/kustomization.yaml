@@ -13,7 +13,7 @@ secretGenerator:
 
 resources:
   # - github.com/ansible/galaxy-operator/config/default?ref=2024.02.29
-  - github.com/djdanielsson/galaxy-operator/config/default?ref=2024.4.3
+  - github.com/djdanielsson/galaxy-operator/config/default?ref=main
 
 images:
   - name: quay.io/ansible/galaxy-operator
