@@ -7,9 +7,9 @@ generatorOptions:
   disableNameSuffixHash: true
 
 secretGenerator:
-  - name: redhat-operators-pull-secret
-    literals:
-      - operator=eda
+  - literals:
+    - operator=eda
+    name: redhat-operators-pull-secret
 
 resources:
   - github.com/ansible/galaxy-operator/config/default?ref=2024.02.29
