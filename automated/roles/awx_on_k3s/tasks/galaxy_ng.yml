@@ -54,7 +54,7 @@
 
 - name: Ensure galaxy.yaml config is good
   ansible.builtin.template:
-    src: "galaxy/{{ item }}.yaml.j2"
+    src: "galaxy_ng/{{ item }}.yaml.j2"
     dest: "{{ awx_on_k3s_deployment_dir }}/galaxy_ng/galaxy/{{ item }}.yaml"
     mode: "0644"
   loop:
