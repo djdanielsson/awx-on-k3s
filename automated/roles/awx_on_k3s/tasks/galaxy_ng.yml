@@ -9,6 +9,9 @@
   kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('kubernetes.core.kustomize', dir=operator_dir) }}"
+    validate:
+      fail_on_error: false
+      strict: false
   vars:
     operator_dir: "{{ awx_on_k3s_deployment_dir }}/galaxy_ng/operator"
 
