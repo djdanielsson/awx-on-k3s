@@ -136,7 +136,6 @@ AWX:
     task_resource_requirements: {}
     ee_resource_requirements: {}
     init_container_resource_requirements: {}
-    postgres_init_container_resource_requirements: {}
     postgres_resource_requirements: {}
     redis_resource_requirements: {}
     rsyslog_resource_requirements: {}
@@ -271,7 +270,7 @@ In this method, the lifecycle of AWX Operator is managed by OLM. In the default 
 Refer to [the first step of the instruction that appears by `Install` button](https://operatorhub.io/operator/awx-operator) for details.
 
 ```bash
-OLM_RELEASE="v0.27.0"
+OLM_RELEASE="v0.28.0"
 curl -sL https://github.com/operator-framework/operator-lifecycle-manager/releases/download/${OLM_RELEASE}/install.sh | bash -s ${OLM_RELEASE}
 ```
 
@@ -449,7 +448,7 @@ kubectl delete -f subscription.yaml
 To uninstall OLM, some resources should be deleted.
 
 ```bash
-OLM_RELEASE="v0.27.0"
+OLM_RELEASE="v0.28.0"
 kubectl delete apiservices.apiregistration.k8s.io v1.packages.operators.coreos.com
 kubectl delete -f https://github.com/operator-framework/operator-lifecycle-manager/releases/download/${OLM_RELEASE}/crds.yaml
 kubectl delete -f https://github.com/operator-framework/operator-lifecycle-manager/releases/download/${OLM_RELEASE}/olm.yaml
